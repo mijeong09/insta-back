@@ -1,6 +1,7 @@
 package com.example.instagramapi.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,7 @@ public class Post extends BaseTimeEntity{
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Builder
     public Post(String content, String imageUrl, User user) {
         this.content = content;
         this.imageUrl = imageUrl;
