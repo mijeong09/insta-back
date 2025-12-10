@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -44,5 +46,28 @@ public class CommentService {
 
         Comment saved = commentRepository.save(comment);
         return CommentResponse.from(saved);
+    }
+
+    public List<CommentResponse> findByPostId(Long postId) {
+        if (!postRepository.existsById(postId)) {
+            throw new CustomException(ErrorCode.POST_NOT_FOUND);
+        }
+
+        List<Comment> comments = commentRepository.findByPostIdWithUser(postId);
+        return comments.stream()
+                .map(CommentResponse::from)
+                .toList();
+    }
+
+    @Transactional
+    public void delete(Long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.NOT_COMMENT_OWNER);
+        }
+
+        commentRepository.delete(comment);
     }
 }
