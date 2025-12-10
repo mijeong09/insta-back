@@ -19,7 +19,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // 특정 사용자의 게시물 조회
     @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.user.id = :userId ORDER BY p.createdAt DESC")
-    List<Post> findByUserIdWithUse(@Param("userId") Long userId);
+    List<Post> findByUserIdWithUser(@Param("userId") Long userId);
 
     // 사용자의 게시물 수
     long countByUserId(Long userId);
