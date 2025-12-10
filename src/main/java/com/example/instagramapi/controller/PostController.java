@@ -45,4 +45,14 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        postService.delete(id, userDetails.getId());
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
