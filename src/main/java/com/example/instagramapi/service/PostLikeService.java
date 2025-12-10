@@ -47,7 +47,7 @@ public class PostLikeService {
 
     @Transactional
     public LikeResponse unlike(Long userId, Long postId) {
-        if (!postLikeRepository.existsById(postId)) {
+        if (!postRepository.existsById(postId)) {
             throw new CustomException(ErrorCode.POST_NOT_FOUND);
         }
 
@@ -61,7 +61,7 @@ public class PostLikeService {
     }
 
     public LikeResponse getLikeStatus(Long postId, Long userId) {
-        if (!postLikeRepository.existsById(postId)) {
+        if (!postRepository.existsById(postId)) {
             throw new CustomException(ErrorCode.POST_NOT_FOUND);
         }
 
