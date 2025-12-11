@@ -55,9 +55,10 @@ public class UserController {
     // GET /api/users/{username}/posts
     @GetMapping("/{username}/posts")
     public ResponseEntity<ApiResponse<List<PostResponse>>> getUserPosts(
-            @PathVariable String username
+            @PathVariable String username,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        List<PostResponse> responses = postService.findByUsername(username);
+        List<PostResponse> responses = postService.findByUsername(username, userDetails.getId());
 
         return ResponseEntity.ok(ApiResponse.success(responses));
     }

@@ -49,8 +49,11 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponse>> findById(@PathVariable Long id) {
-        PostResponse response = postService.findById(id);
+    public ResponseEntity<ApiResponse<PostResponse>> findById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        PostResponse response = postService.findById(id, userDetails.getId());
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
