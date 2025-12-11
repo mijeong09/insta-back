@@ -2,6 +2,7 @@ package com.example.instagramapi.service;
 
 
 import com.example.instagramapi.dto.response.FollowResponse;
+import com.example.instagramapi.dto.response.UserResponse;
 import com.example.instagramapi.entity.Follow;
 import com.example.instagramapi.entity.User;
 import com.example.instagramapi.exception.CustomException;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +47,7 @@ public class FollowService {
         }
 
         // 이미 팔로우 중인지 페크
-        if (!followRepository.existsByFollowerIdAndFollowingId(follower.getId(), following.getId())) {
+        if (followRepository.existsByFollowerIdAndFollowingId(follower.getId(), following.getId())) {
             throw new CustomException(ErrorCode.ALREADY_FOLLOWING);
         }
 
@@ -56,5 +59,40 @@ public class FollowService {
         followRepository.save(follow);
 
         return getFollowCounts(following.getId(), true);
+    }
+
+    @Transactional
+    public FollowResponse unfollow(String username, Long followerId) {
+        // 대상 조회
+        User following = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Follow follow = followRepository
+                .findByFollowerIdAndFollowingId(followerId, following.getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOLLOWING));
+
+        followRepository.delete(follow);
+
+        return getFollowCounts(following.getId(), false);
+    }
+
+    // 팔로워 목록
+    public List<UserResponse> getFollowers(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return followRepository.findFollowersByFollowingId(user.getId()).stream()
+                .map(follow -> UserResponse.from(follow.getFollower()))
+                .toList();
+    }
+
+    // 팔로잉 목록
+    public List<UserResponse> getFollowings(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return followRepository.findFollowingsByFollowerId(user.getId()).stream()
+                .map(follow -> UserResponse.from(follow.getFollowing()))
+                .toList();
     }
 }
