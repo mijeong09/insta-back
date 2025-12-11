@@ -1,7 +1,10 @@
 package com.example.instagramapi.repository;
 
+import com.example.instagramapi.entity.Post;
 import com.example.instagramapi.entity.PostLike;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -15,4 +18,6 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
 
     // 게시물의 좋아요 수
     long countByPostId(Long postId);
+
+
 }
